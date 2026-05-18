@@ -1,0 +1,228 @@
+/* Custom Properties */
+@font-face {
+    font-family: 'Cousine';
+    src: url('cousine/Cousine-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'Computer Modern';
+    src: url('../../nicci/assets/cmunrm.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Computer Modern';
+    src: url('../../nicci/assets/cmunti.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+:root {
+    --color-bg: white;
+    --color-border: red;
+    --border-width: 10px;
+    --color-text-heading: red;
+    --color-text-body: #200000;
+    --color-text-meta: #200000;
+    --color-img-bg: #e8e4e4;
+    --font-heading: 'Computer Modern', 'Georgia', serif;
+    --font-body: 'Computer Modern', 'Georgia', serif;
+    --font-ui: 'Cousine', 'Courier New', monospace;
+    --page-padding: 3rem;
+    --img-gap: 3.5rem;
+}
+
+/* Base */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    background: var(--color-bg);
+}
+
+body {
+    min-height: 100vh;
+    background: var(--color-bg);
+    font-family: var(--font-body);
+    color: var(--color-text-body);
+    overflow-x: hidden;
+}
+
+#border {
+    position: fixed;
+    inset: 0;
+    border: var(--border-width) solid var(--color-border);
+    pointer-events: none;
+    z-index: 9999;
+}
+
+a,
+a:visited {
+    color: var(--color-text-body);
+}
+
+a:hover,
+a:active {
+    color: var(--color-text-heading);
+}
+
+.page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: var(--page-padding);
+}
+
+::selection {
+    background: var(--color-text-heading);
+    color: var(--color-bg);
+}
+
+
+/* Headers */
+.site-header {
+    padding: var(--page-padding);
+}
+
+.site-nav {
+    font-family: var(--font-body);
+    font-size: 1.35rem;
+    line-height: 1.55;
+    color: var(--color-text-body);
+    margin-bottom: 1.5rem;
+}
+
+.article-title,
+.article-subtitle {
+    font-family: var(--font-heading);
+    font-size: 6rem;
+    font-weight: 500;
+    background-color: var(--color-text-heading);
+    color: var(--color-bg);
+    line-height: 1;
+    margin-bottom: 0.2em;
+}
+
+.article-subtitle {
+    font-size: 2rem;
+    margin-bottom: 0;
+}
+
+.article-rule {
+    border: none;
+    border-top: var(--border-width) solid var(--color-border);
+    margin: 2rem 0 3rem;
+}
+
+/* Body */
+.essay p {
+    font-family: var(--font-body);
+    font-size: 1.35rem;
+    line-height: 1.55;
+    color: var(--color-text-body);
+    margin-bottom: 1.5rem;
+    max-width: var(--text-max);
+}
+
+.essay p em {
+    font-style: italic;
+}
+
+/* Section headers */
+.essay h2 {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: 500;
+    background-color: var(--color-text-heading);
+    color: var(--color-bg);
+    line-height: 1;
+    padding: 0;
+    margin-top: 3.5rem;
+    margin-bottom: 2rem;
+    max-width: var(--text-max);
+}
+
+/* Images */
+.img-figure {
+    margin: var(--img-gap) 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.img-figure.full {
+    margin-left: calc(var(--page-padding) * -4);
+    margin-right: calc(var(--page-padding) * -4);
+
+    .img-caption {
+        text-align: center;
+    }
+}
+
+.img-figure.offset {
+
+    img {
+        width: 80%;
+        margin-left: auto;
+    }
+
+    .img-caption {
+        text-align: right;
+    }
+}
+
+.img-figure.inset {
+    img {
+        width: 80%;
+        margin-right: auto;
+    }
+
+    .img-caption {
+        text-align: left;
+    }
+}
+
+.img-figure img {
+    width: 100%;
+    display: block;
+    margin: 0;
+}
+
+.img-caption {
+    font-family: var(--font-ui);
+    font-size: .9rem;
+    text-transform: uppercase;
+    color: var(--color-text-meta);
+    line-height: 1.5;
+    max-width: var(--text-max);
+    margin-top: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 680px) {
+    :root {
+        --page-padding: 1.25rem;
+    }
+
+    .article-title,
+    .article-subtitle,
+    .essay p,
+    .essay h2,
+    .site-nav {
+        font-size: 1.1rem;
+    }
+
+    .img-figure.offset,
+    .img-figure.inset,
+    .img-figure.full {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+}
