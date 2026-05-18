@@ -108,8 +108,8 @@ let formats = [
     (deg, accent, end) => `linear-gradient(${deg}, ${accent}, ${end})`,
     (deg, accent, end) => `linear-gradient(${deg}, ${end}, ${accent}, ${end})`,
 ];
-let widths = [160, 200, 260, 320, 400];
-let heights = [100, 140, 180, 240, 300];
+let widths = [320, 400, 480, 560, 640];
+let heights = [240, 300, 360, 420, 480];
 
 function buildPlot(member, x, y) {
     const plot = document.createElement('div');
@@ -125,7 +125,11 @@ function buildPlot(member, x, y) {
     }
     plot.style.width = widths[Math.floor(Math.random() * widths.length)] + 'px';
     plot.style.height = heights[Math.floor(Math.random() * heights.length)] + 'px';
-    plot.innerHTML = `<a href="members/${member.slug}/">${member.name}</a><div class="resize-handle"></div>`;
+    plot.innerHTML = `<a href="members/${member.slug}/">${member.name}<br><em>${member.tagline}</em>`;
+    if (member.image) {
+        plot.innerHTML += `<img src="${member.image}" style="padding-left: 25px; max-width: 66%; max-height: 66%;" alt="${member.name}">`;
+    }
+    plot.innerHTML += `</a><div class="resize-handle"></div>`;
     return plot;
 }
 

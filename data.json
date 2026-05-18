@@ -14,5 +14,14 @@
         "accent": "#ff6b4a",
         "x": 200,
         "y": 200
+    },
+    {
+        "name": "X. A. Li",
+        "slug": "xali-consensus",
+        "tagline": "Consensus: On Fragments and Formations",
+        "image": "https://storage.googleapis.com/xa-li-com/assets/media/2025/consensus/xali_consensus_2025_015.jpg",
+        "accent": "red",
+        "x": 400,
+        "y": 400
     }
 ]

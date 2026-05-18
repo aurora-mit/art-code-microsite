@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Consensus: On Fragments and Formations by X. A. Li</title>
+    <style>
+        /* Custom Properties */
+        @font-face {
+            font-family: 'Cousine';
+            src: url('assets/cousine/Cousine-Regular.ttf');
+        }
+
+        :root {
+            --color-bg: #f5ecec;
+            --color-border: red;
+            --border-width: 10px;
+            --color-text-heading: red;
+            --color-text-body: #200000;
+            --color-text-meta: #200000;
+            --color-img-bg: #e8e4e4;
+            --font-heading: 'Times New Roman', 'Times', serif;
+            --font-body: 'Helvetica', 'Helvetica Neue', 'Arial', sans-serif;
+            --font-ui: 'Cousine', 'Courier New', monospace;
+            --page-padding: 3rem;
+            --img-gap: 3.5rem;
+        }
+
+        /* Base */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            background: var(--color-bg);
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--color-bg);
+            font-family: var(--font-body);
+            color: var(--color-text-body);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        #border {
+            position: fixed;
+            inset: 0;
+            border: var(--border-width) solid var(--color-border);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        a,
+        a:visited {
+            color: var(--color-text-body);
+        }
+
+        a:hover,
+        a:active {
+            color: var(--color-text-heading);
+        }
+
+        .page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: var(--page-padding);
+        }
+
+        ::selection {
+            background: var(--color-text-heading);
+            color: var(--color-bg);
+        }
+
+
+        /* Headers */
+        .site-header {
+            padding: var(--page-padding);
+        }
+
+        .site-nav {
+            font-family: var(--font-body);
+            font-size: 1.35rem;
+            line-height: 1.55;
+            color: var(--color-text-body);
+            margin-bottom: 1.5rem;
+        }
+
+        .article-title,
+        .article-subtitle {
+            font-family: var(--font-heading);
+            font-size: 6rem;
+            font-weight: 500;
+            background-color: var(--color-text-heading);
+            color: var(--color-bg);
+            line-height: 1;
+            margin-bottom: 0.2em;
+            padding-left: 1rem;
+        }
+
+        .article-subtitle {
+            font-size: 2rem;
+            margin-bottom: 0;
+        }
+
+        .article-rule {
+            border: none;
+            border-top: var(--border-width) solid var(--color-border);
+            margin: 2rem 0 3rem;
+        }
+
+        /* Body */
+        .essay p {
+            font-family: var(--font-body);
+            font-size: 1.35rem;
+            line-height: 1.55;
+            color: var(--color-text-body);
+            margin-bottom: 1.5rem;
+            max-width: var(--text-max);
+        }
+
+        .essay p em {
+            font-style: italic;
+        }
+
+        /* Section headers */
+        .essay h2 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 500;
+            background-color: var(--color-text-heading);
+            color: var(--color-bg);
+            line-height: 1.4;
+            margin-top: 3.5rem;
+            margin-bottom: 2rem;
+            max-width: var(--text-max);
+            padding-left: 1rem;
+        }
+
+        /* Images */
+        .img-figure {
+            margin: var(--img-gap) 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        .img-figure.full {
+            margin-left: calc(var(--page-padding) * -4);
+            margin-right: calc(var(--page-padding) * -4);
+
+            .img-caption {
+                text-align: center;
+            }
+        }
+
+        .img-figure.offset {
+
+            img {
+                width: 80%;
+                margin-left: auto;
+            }
+
+            .img-caption {
+                text-align: right;
+            }
+        }
+
+        .img-figure.inset {
+            img {
+                width: 80%;
+                margin-right: auto;
+            }
+
+            .img-caption {
+                text-align: left;
+            }
+        }
+
+        .img-figure img {
+            width: 100%;
+            display: block;
+            margin: 0;
+        }
+
+        .img-caption {
+            font-family: var(--font-ui);
+            font-size: .9rem;
+            text-transform: uppercase;
+            color: var(--color-text-meta);
+            line-height: 1.5;
+            max-width: var(--text-max);
+            margin-top: 0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 680px) {
+            :root {
+                --page-padding: 1.25rem;
+            }
+
+            .essay p,
+            .essay h2 {
+                font-size: 1.1rem;
+            }
+
+            .img-figure.offset,
+            .img-figure.inset,
+            .img-figure.full {
+                width: 100%;
+                margin-left: 0;
+                margin-right: 0;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="border">
+    </div>
+    <header class="site-header">
+        <span class="site-nav"><a href="/">← Back to Index</a></span>
+    </header>
+    <div class="page">
+        <h1 class="article-title"><em>Consensus</em>: On Fragments and Formations</h1>
+        <h1 class="article-subtitle">X. A. Li</h1>
+        <hr class="article-rule">
+        <article class="essay">
+
+            <p>
+                <em>Consensus</em> (2025-present) was first developed in response to an invitation from Rin Peisert,
+                Curator of
+                Relative Intensity Noise, and Cynthia Post-Hunt, Curator of Performance at the Momentary and Crystal
+                Bridges Museum of American Art in Bentonville. It will be installed for a second iteration as part
+                of Matrixed Systems, a group exhibition at GLO Modern in New York organized by Danielle Paterson,
+                Curator at Metalabel. It can be viewed 24/7 at GLO Modern, 45 Market St, between May 29 and June 29,
+                2026 and always at <a href="https://ourconsensus.org" target="_blank">ourconsensus.org</a>.
+            </p>
+
+            <figure class="img-figure full">
+                <img
+                    src="https://storage.googleapis.com/xa-li-com/assets/media/2025/consensus/xali_consensus_2025_009.jpg">
+                <figcaption class="img-caption">Live view on <a href="https://ourconsensus.org"
+                        target="_blank">ourconsensus.org</a>, October 10-11, 2025.</figcaption>
+            </figure>
+
+            <h2>1.</h2>
+
+            <p>
+                I remember October 2025 as unexpectedly warm. The sun shone directly onto a flat landscape of
+                asphalt, sidewalks, and well-groomed corporate campuses none of us were allowed to enter. At night
+                glistening streams of visitors flowed through the museum’s arteries, where both designated galleries
+                and peripheral spaces were illuminated in the slippery palette of dreams. Rooms seized into
+                thrashing images and sounds and bodies before quieting and eventually alighting once more. Nothing
+                stayed fixed. Nothing made much sense. “What is going on???” a man asked his friend in genuine
+                bewilderment, nonetheless smiling. Sometimes it was too loud and sometimes viewers felt themselves
+                called to transgress and sometimes things happened which cannot be planned or sought or permitted.
+                No one knew what came next.
+            </p>
+
+            <figure class="img-figure offset">
+                <img
+                    src="https://storage.googleapis.com/xa-li-com/assets/media/2025/consensus/xali_consensus_2025_005.jpg">
+                <figcaption class="img-caption">Installation view at The Momentary, October 10-11, 2025 with performer
+                    Heidee Lyn Alsdorf.</figcaption>
+            </figure>
+
+            <p>
+                This is only what I remember. Of course I must be wrong in so many ways, but who is to say? I can
+                recall the thrill and terror of the hours that unfurled, reference photos holding arbitrary moments
+                in a permanent blink, shape words into pixels on a screen that might evoke strained glimpses into
+                irretrievable days. These are all so completely inadequate, yet these representations are the only
+                things I can conjure for myself, for you. How strange it is to live in a world where so much can
+                only be known through the mutilated fragments that remain.
+            </p>
+
+            <h2>2.</h2>
+
+            <p>
+                I have been increasingly bored by the contorted neatness of it all, this totalizing expectation that
+                both our selves and productive outputs should be succinctly legible. We internalize the prevailing
+                visual and linguistic grammars of discernment, taste, and prestige. Do any of us enjoy offering
+                ourselves to the world as a collection of images, a carefully crafted bio, a CV outlining in brief
+                all of our most illustrious affiliations without the moments of presence yawning behind each line?
+                Can an artwork, a place, a promise be actually appraised through detached photos and descriptions,
+                even the most elegant and comprehensive and faithful?
+                More and more I am convinced not. I find myself craving the vertigo of traversing sites unnamed,
+                starting down detours wholly unmapped, sitting with what might never recur.
+            </p>
+
+            <p>
+                We invest in our own symbolic value within economies where arbiters process these functional
+                abstractions first, with the illusory surface as the primary unit assessed and transacted. This
+                peculiar condition has been articulated elsewhere (Debord’s spectacle, Baudrillard and Berardi on
+                semiocapitalism), and it will be pedantic for me to recapitulate these texts incompletely here.
+                Today it is hard not to notice how all the stand-ins and proxies we tolerate as sufficient are in
+                truth stripped and alienated, how they nonetheless accrue at scale through countless quiet processes
+                beyond our perceptible grasp, reinforcing, escalating, settling. The algorithm serves you a video so
+                baffling that you linger upon it before deciding that you never want to see anything like that ever
+                again, but those confused seconds are understood as affirmative. The video multiplies; its creators
+                invest real labor and resources into something no one needs, but how consequential is that initial vexed
+                pause. The statistical representations of you, your interests, your activity, and every piece of
+                servable content each accentuate and simplify. Sometimes there is no obvious error until a collision
+                of presumptions.
+            </p>
+
+            <figure class="img-figure full">
+                <img
+                    src="https://storage.googleapis.com/xa-li-com/assets/media/2025/consensus/xali_consensus_2025_001.jpg">
+                <figcaption class="img-caption">Installation view at The Momentary, October 10-11, 2025 with performer
+                    Heidee Lyn Alsdorf and visitors.
+                </figcaption>
+            </figure>
+
+            <p>
+                The specter of “artificial intelligence” looms over this, both in its ongoing assignment to
+                transform every iota of the cosmos into orderly units and in its own rhetorical blurring into an
+                unmoored notion attributed impossible combinations of faults and wishes. In spite of the feverish
+                din coming out of Silicon Valley there is no mystical power attributable to artificial intelligence.
+                There are a lot of smart people–almost all men, White or Asian, below the age of forty, with degrees
+                from a small set of universities–who have developed useful sequences of multiplication and addition
+                through access to very large computers. There are so many numbers and so many steps that these
+                researchers and engineers cannot explain or control every inference and outcome. What gets
+                multiplied and added to, by how much, is derived from a process that repeatedly tests different
+                adjustments following provided examples. I am describing neural network
+                training this way not to be dismissive but to attempt, as much as possible, to step away from all
+                the big words that carry the sheen of technical magic.
+            </p>
+            <p>I do not deny that trillions of numbers on
+                immense computers can do very impressive things, exceeding explicit prescription, with emergent
+                properties that induce shock and awe. But all the embedding vectors and chained predictions and
+                agentic workflows ultimately seep into the backrooms of everyday life, confronting the same entropic
+                universe constantly besieging our best laid plans. The understructure of the operational image–which
+                can still be parsed by the human eye–is the numeric matrix produced and consumed by contemporary
+                machine learning models. We see a meaningless grid of decimals. The algorithm might see a person and
+                all that usefully distinguishes their self and psyche from another. It can be astonishingly good at
+                ascertaining your most obvious differentiators. I would hope though that you have secrets which
+                cannot be so pithily captured by 3,072 characters, figures, anything.
+            </p>
+
+            <p>
+                Manufacturers promote seductive fantasies of paradigm-changing advances. The public shifts its
+                expectation of what can be predicted, represented, and created. Debates roar with the heat of
+                allegiances, incentives, ideologies, fears, the desire to assert oneself influential and
+                authoritative. Capital recklessly deploys new, promising tools to varying success. What
+                exactly is the thing itself? Whose generalizations are correct? Which future is most likely?
+            </p>
+
+            <p>
+                I won't claim some definitive answer. Let me just show you one thing.
+            </p>
+
+            <h2>3.</h2>
+
+            <figure class="img-figure inset">
+                <img
+                    src="https://storage.googleapis.com/xa-li-com/assets/media/2025/consensus/xali_consensus_2025_015.jpg">
+                <figcaption class="img-caption">Installation view at The Momentary, October 10-11, 2025.</figcaption>
+            </figure>
+
+            <p>
+                Concretely, here is what happened. A friend invited me to contribute an artwork to a durational
+                program of time-based art. I set up webcams in the corners of two rooms joined by an exterior
+                bridge. I placed large screens in two locations, outside and internal to these now watched spaces. A
+                third screen was placed in the museum lobby, providing visitors a portal to dislocated scenes
+                somewhere in the distant cavities of the building to be discovered. A fourth screen was available on
+                anyone’s cell phone, laptop, desktop, further obstructed by a continuous stream of half-coherent
+                text narrating the activities on view. Once the performances and activations commenced, each of
+                these screens would begin broadcasting both live video and incrementally mediating narrations
+                generated by two open-source models. One attempted to describe what was happening. The other
+                attempted to estimate how many people were present, which the system used as a heuristic for
+                attention and thus importance. Every few seconds the system processed events across the museum.
+                Thousands of observations were noted; exactly 2,542 were ultimately deemed significant according to
+                human presence. These 2,542 sentence fragments informed a final summary upon conclusion asserting
+                what supposedly occurred, rendered on a website now abruptly sparse with the clinical appearance of
+                undecorated fact. Every week this account automatically re-generated, combing the same finite stubs,
+                a futile exercise towards severed truths.
+            </p>
+
+            <p>
+                Running any software involving machine learning in real time, on real inputs, can be
+                difficult. There are the inevitable bugs that come with any collection of code, exacerbated by the
+                severe handicap suffered by even the most optimized models – training and evaluation data remain a
+                tiny slice of reality, so every model in the wild will encounter unseen sights, sounds,
+                words. Those accustomed to routine intimacies with their chatbot of choice associate “AI” with its
+                most pleasing form nourished by energy-intensive servers whose real cost remains untenably,
+                optimistically discounted. But the automated apparatuses tightly latticed upon contemporary economic
+                and social life cannot afford to wait luxurious minutes for each judgment, each prediction, each of
+                the virtually innumerable operations happening above us, below us, within plastic exteriors and
+                tactile interfaces and distant walls, in our very palms. In many cases models must be fast to be
+                useful. The faster the model is, the more it must make an epistemic bargain: that its compressed
+                world allows it to navigate vast, unruly expanses adequately enough, at least in the scenarios it
+                has been designed for, the only slivers of encounter that matter. It was important for me that these
+                are models which already existed, not sleek contrivances for this artwork but readymades embodying
+                aims and decisions from the world at large. The models I used are good in theory, but in practice
+                they have never been trialed on anything resembling what they were tasked with here. They are built for
+                industry, for utility, for the academic or professional advancement of their creators. Regardless
+                they were released for anyone to use, generously offered to corporations and governments and
+                researchers and even an individual artist dragging these tidy artifacts far, far out of bounds.
+            </p>
+
+            <figure class="img-figure full">
+                <img
+                    src="https://storage.googleapis.com/xa-li-com/assets/media/2025/consensus/xali_consensus_2025_006.jpg">
+                <figcaption class="img-caption">Installation view at The Momentary, October 10-11, 2025.
+                </figcaption>
+            </figure>
+
+
+            <p>
+                I had no idea what would happen. I was nervous that my hardware would fail, the
+                application would hit a bug, the wifi would go down, the models would blurt out nonsense after nonsense
+                beyond aesthetic or semantic interest. This artwork is predicated upon representation as
+                self-evidently inadequate, but I had no ability to anticipate what inadequacies would emerge. Over
+                and over the system regurgitated its oneiric setting with a sort of disassociated myopia, noting the
+                literal shapes and terms of people and objects mostly correctly, trembling more and more as it
+                veered into conjecture. Is this a museum or a warehouse or a post office? Is there fog or fire or
+                cloud? To everyone’s surprise the system repeatedly demonstrated two oddly specific subjectivities.
+                It liked to call some people “my friend.” It also judged multiple viewers as “too old.” At times
+                tender, at times cruel, so often half-right and yet so wrong. Just like us.
+            </p>
+
+            <figure class="img-figure full">
+                <img
+                    src="https://storage.googleapis.com/xa-li-com/assets/media/2025/consensus/xali_consensus_2025_010.jpg">
+                <figcaption class="img-caption">Final proposed narrative of Relative Intensity Noise at The Momentary on
+                    <a href="https://ourconsensus.org/momentary" target="_blank">ourconsensus.org</a>.
+                </figcaption>
+            </figure>
+
+            <h2>4.</h2>
+
+            <p>
+                Aspirationally, here is what will happen. <em>Consensus</em> has been installed for a second time in a
+                different setting. It will attempt to document an exhibition in a single-room gallery for one month.
+                Around the clock it will beam out a poor view of the activities within onto Market St in the Two
+                Bridges neighborhood of Manhattan. A more noisy view can once again be accessed online, dominated by
+                ceaseless interpretations above stuttering images faintly visible in the gaps and margins. Much of
+                the time there will be no activity. The system will dutifully continue its assigned labor,
+                describing what it sees rotely. At one point during install the camera was obstructed, facing only a
+                wash of gray. <em>The sky above my house</em>, it repeated, again and again. A record will emerge,
+                unquestioning, earnest, an undiscerning pantomime of how we distill infinity into discrete,
+                tractable units. What will the system consider noteworthy? What mimicries will it adopt? What
+                inventions might calcify into plausible truth? I’m glad to not know.
+            </p>
+
+            <figure class="img-figure full">
+                <img
+                    src="https://storage.googleapis.com/xa-li-com/assets/media/2025/consensus/consensus_glo_preview.png">
+                <figcaption class="img-caption">Test at GLO Modern during install, May 2026.</figcaption>
+            </figure>
+            <hr class="article-rule">
+
+
+            <p>
+                <a href="https://xa-li.com" target="_blank">X. A. Li</a> is a Chinese-American artist and computer
+                scientist living in
+                Chicago. She creates volatile
+                environments that escalate systems of logic into nonsense. Drawing from an embedded background in
+                "artificial intelligence" research, she uses video, sound, text, and code to construct installations and
+                performances that misappropriate ordinary economic and technical protocols beyond familiar utility.
+                Materialized through indeterminate conditions subject to risk and chance, her work agitates default
+                notions of the correct and inevitable, seeking the unknown. She holds an M.S. in Computer Science from
+                the Georgia Institute of Technology and a B.A. in Economics from the University of Chicago.
+
+            </p>
+        </article>
+
+
+
+    </div>
+
+</body>
+
+</html>
