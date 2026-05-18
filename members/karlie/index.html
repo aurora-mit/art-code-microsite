@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.5.0/lib/p5.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Lekton:ital,wght@0,400;0,700;1,400&display=swap"
+    rel="stylesheet">
+  <style>
+    html {
+      cursor: url('/assets/cursors/hand.png'), auto;
+    }
+
+    body {
+      overflow: hidden;
+      --grid-stroke: #2a322f;
+      background-color: #1e2522;
+      background-image: linear-gradient(to right, var(--grid-stroke) .05rem, transparent .075rem), linear-gradient(to bottom, var(--grid-stroke) .05rem, transparent .075rem);
+      background-size: 0.9rem 0.9rem;
+      font-family: "Lekton", monospace;
+      font-weight: bold;
+      cursor: url('/assets/cursors/hand.png'), auto;
+    }
+
+    body:active {
+      cursor: url('/assets/cursors/hand-grabbing.png'), auto;
+    }
+
+    a {
+      color: inherit;
+      cursor: url('/assets/cursors/hand-pointing.png'), auto;
+    }
+
+    a:hover {
+      color: #FFF
+    }
+
+    canvas {
+      /* opacity: 0; */
+      /* box-shadow: 0 0 15px #201e2c99; */
+      border-radius: 10px;
+      /* position: fixed; */
+      z-index: 10;
+      /* top: 10vh;
+      left: 15vw; */
+      display: block;
+      z-index: 1;
+    }
+
+    #container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      /* width: max-content; */
+      width: 100vw;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      height: 100vh;
+    }
+
+    #info {
+      display: block;
+      position: absolute;
+      text-align: right;
+      top: 0;
+      right: 0;
+      font-size: 26px;
+      letter-spacing: 1px;
+      color: #f9ff4c;
+      padding: 0.5em;
+      width: 25vw;
+      z-index: 1000;
+    }
+
+    small {
+      display: block;
+      padding-top: 0.5rem;
+      font-size: 18px;
+      line-height: 19px;
+    }
+
+    .inline-image {
+      z-index: 10;
+      position: fixed;
+      opacity: 0.3;
+    }
+
+    .original-image {
+      z-index: 1;
+      pointer-events: none;
+      visibility: hidden;
+      position: fixed;
+    }
+
+    .original-image {
+      filter: drop-shadow(0 0 20px #f9ff4c55);
+    }
+
+    #sound-modal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 999;
+    }
+
+    #sound-innerbox {
+      background: #44574f;
+      box-shadow: 0 0 15px #44574f88;
+      border: 0.8px solid #f9ff4c88;
+      color: #f9ff4c;
+      padding: 2rem 2.5rem;
+      border-radius: 3px;
+      max-width: 430px;
+      min-width: 250px;
+      text-align: center;
+      font-family: 'Lekton', monospace;
+      font-weight: normal;
+    }
+
+    #sound-ok {
+      padding: .6rem 2rem;
+      color: #f9ff4c;
+      border: 1px solid #f9ff4c88;
+      background: transparent;
+      font-family: inherit;
+      font-size: 14px;
+      cursor: url('/assets/cursors/hand-pointing.png'), auto;
+      border-radius: 3px;
+    }
+
+    #sound-ok:focus {
+      outline: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container">
+  </div>
+  <div id="info">
+    Sounding Textiles<br>
+    <small>Textile Instruments<br>
+      various dimensions<br>
+      <a href="https://theunthoughts.com/" target="_blank">¡wénrán zhào!</a> <br>
+      2023 -<br>
+    <a href="https://theunthoughts.com/other-textiles/" target="_blank"> see more? </a></small>
+  </div>
+  <div id="sound-modal">
+    <div id="sound-innerbox">
+      <p style="margin:0 0 1.5rem; font-size:15px;line-height:1.6;">
+        Hi! I made this web experience to celebrate textile-making as a practice, as the language they became for my aunt. 
+        The experience contains sound. You can explore by moving your mouse around and dragging the text. <br>
+      </p>
+      <button id="sound-ok">
+        Ok, let's go. </button>
+    </div>
+  </div>
+  <div class="image-wrapper">
+    <img class="inline-image" src="./assets/01mono.svg" style="position: fixed; top:5em; left: 3em; width: 4em;" />
+    <img class="inline-image" src="./assets/02mono.svg" style="position: fixed; top:11em; left: 27em; width: 6em;" />
+    <img class="inline-image" src="./assets/03mono.svg" style="position: fixed; top:15em; left: 7em; width: 7em;" />
+    <img class="inline-image" src="./assets/04mono.svg" style="position: fixed; top:25em; left: 22em; width: 5em;" />
+    <img class="inline-image" src="./assets/05mono.svg" style="position: fixed; top:35em; left: 26em; width: 5em;" />
+    <img class="inline-image" src="./assets/06mono.svg" style="position: fixed; top:35em; left: 26em; width: 5em;" />
+    <img class="inline-image" src="./assets/07mono.svg" style="position: fixed; top:35em; left: 26em; width: 5em;" />
+
+    <img class="original-image hidden" src="./assets/01sm.png" style="position: fixed; top:5em; left: 3em; width: 4em;" />
+    <img class="original-image hidden" src="./assets/02sm.png"
+      style="position: fixed; top:11em; left: 27em; width: 6em;" />
+    <img class="original-image hidden" src="./assets/03sm.png"
+      style="position: fixed; top:15em; left: 7em; width: 7em;" />
+    <img class="original-image hidden" src="./assets/04sm.png"
+      style="position: fixed; top:25em; left: 22em; width: 5em;" />
+    <img class="original-image hidden" src="./assets/05sm.png"
+      style="position: fixed; top:35em; left: 26em; width: 5em;" />
+    <img class="original-image hidden" src="./assets/06sm.png"
+      style="position: fixed; top:35em; left: 26em; width: 5em;" />
+    <img class="original-image hidden" src="./assets/07sm.png"
+      style="position: fixed; top:35em; left: 26em; width: 5em;" />
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script>
+
+    const txt = [
+      "-----*----+*-----------[::--->%---:-*----------:-----:-*------*:------:[:-----:-#------::------:=------+:----",
+      "-------:------------------<[[-[[[----------------:->****++-+--------------[--:-@@---+[+----------:*:---+-----",
+      "-----:*+-:----------------:--:-*=-| Over the past years, I've created a series of electronic textiles.",
+      "-----=-----+------------[*--:%@--:| These works, embroidered, knitted, woven, or crocheted, emit sound when touched.",
+      "-----::------++-----:[:------@----| They are made with conductive thread, microcontrollers, and custom software,",
+      "-------=--------:-----------#:-+--| sometimes incorporating copper wire or beads.",
+      "-------:+-------+--*-------------:| At times, I draw inspiration for patterns from my aunt.",
+      "----------------:+[------@<-------| For two thirds of her life, she worked days in a carpet factory and spent her nights",
+      "------------:-=+-*:---%#----------| crocheting or knitting at home. She was exceptionally skilled; almost obsessed with this craft",
+      "------------:->:-:=+=-------------| that has become a language for hers, her expressions encoded",
+      "--------:-------:[+---:+----------| in the repeated motions of twisting, folding, threading.",
+      "--------%:-----:[-:-------+------+| When you first learn crochet or knitting, your fingers hurt.",
+      "------@--------[---=--------:---:-| As a child, I was given these toys she made with fishing line and plastic beads:",
+      "-----:[------:[-----+:------=--=--| a golden pony, a girl in a blue dress. She would point to a rabbit made of clear beads,",
+      "-----@----:[]----------=:----=+---| her fingers reddened from constricted by the fishing line, and call it Jade.",
+      "-----#[[[---------------:-=++**-:-| I often feel I lack the words to describe the gestures of crochet and knitting.",
+      "-----@----[:-------------:++:++=++| Those gestures become knots, materially recording a continuous, repetitive motion.",
+      "-----@:------=------:-+------**---| A knot—perhaps the simplest form of binary encoding.",
+      "-----@----:[]----------=:----=+------+:------:[-------@@-------[---------------*:------:+--------[:------:---",
+      "------:-------[-----:-------=::---| So how did weaving and embroidery,in that dim 1980s, travel through the noisy alleyways in Beijing,",
+      "-------@-------:[-::-------:=--=--| to grant a language to a young woman who could not continue her education after high school?",
+      "--------@<:-----+-+-------+------=| A voice. A language that gives form to her smallest creative endeavors. ",
+      "-----------@:---:[-----++---------| We think of rituals as religious undertakings, but at its core, ritual is a careful adherence,",
+      "---------------@@-[>--------------| a focused and sustained act of reverence.",
+      "----------+=:---+[----@@----------| A piece of textile is a ritual in two ways: how it is made (knot by knot, stitch by stitch)",
+      "--------+-------:::------%-------%| and how it exists, as an object that creates and reproduces a view of the world.",
+      "---------------+--[-------------:-| The moment you touch a textile is when your dialogue with it truly begins.",
+      "-----::-------------:-------%--[--| Touch, too, is a ritual. Your fingers follow the traces left by the maker,",
+      "-----=-----:=:------:+:--:---%#---| over the dense stitches or intricate patterns,",
+      "----:*++-+--------------[:---@@>=-| guiding you without instruction or insistence.",
+      "-----:::-+:--------------::[[-#[[-| They unfold on their own terms, exceeding what sight and sound can hold.",
+      "-----+------*-------::------:}%---| Pay attention to how I break sentences. How am I carried along by the structure and rhythm of language?",
+      "-----=:------::-----[:---------[--| How do you experience it? Do you read a piece of textiles the way you would read a poem? ",
+      "------=--------*--+)-------%:--@--| New Media art gives form and meanings to mediators—beings that attune relationships,",
+      "--------+:------:-:------:#-------| even in the ephemeral and invisible",
+      "----------+=----*[----:*----------| —that have yet to be excavated, interpreted, conceptualized, or confronted.",
+      "--------------**+-@%:----------------:-@-)*-:--+:------------*=-::-]--:-%=------------@@---=)----*+----------",
+      "----------:@:---[>----*-------------==:=-+[---%:--------------<-@@-**>>:-----------------**<-@@@-------------",
+    ];
+    let isStarted = false;
+
+    new p5(function (p) {
+      let threads = [];
+      let textArr = [];
+      let capturedPoint = null;
+      const loops = 6;
+      const grav = 0.00002;
+      const textS = Math.min(20, Math.max(9, Math.floor(window.innerWidth / 100)));
+      const startY = window.innerHeight - (textS + 2) * txt.length;
+      const startX = 5;
+      const lineHeight = textS * 1.1;
+      const letterSpacing = textS * 0.5;
+      const bounce = 0.0;
+      let ground;
+      let segments = [];
+      const COOLDOWN_MS = 100;
+      let lastHoverPlayed = 0;
+      let soundFiles = new Array(71).fill("assets/sounds/drum/");
+      let sounds;
+      let audioCtx;
+
+      let ambient;
+      let ambientStarted = false;
+      let ambientLoaded = false;
+
+      let visibleObj = null;
+
+      const originalCol = "#cad3c1", highlightCol = "#f9ff4c"
+
+      class Point {
+        constructor(x, y) { this.x = x; this.y = y; this.prevX = x; this.prevY = y; this.locked = false; }
+      }
+      class Stick {
+        constructor(a, b) { this.a = a; this.b = b; this.c = originalCol; this.length = p.dist(a.x, a.y, b.x, b.y); }
+      }
+      class Obj {
+        constructor(x, y, r, label) { this.x = x; this.y = y; this.r = r; this.label = label; }
+      }
+
+      p.setup = function () {
+        const cnv = p.createCanvas(p.windowWidth, p.windowHeight);
+        document.querySelector('#container').style.display = 'none';
+        cnv.parent('container');
+        p.textFont("Lekton"); //Kode Mono, Fira code, Lekton, Baskervville
+        // p.textStyle(p.BOLD);
+        p.textSize(textS);
+        ground = p.height;
+        const asciiImages = document.querySelectorAll('.inline-image');
+        const originalImages = document.querySelectorAll('.original-image');
+
+
+        asciiImages.forEach((el, index) => {
+          el.style.width = `${p.random(10, 12)}em`;
+
+          const maxAttempts = 100;
+          const padding = 20;
+          let placed = false;
+
+          for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            const leftPct = p.random(10, 90);
+            const topPct = p.random(5, 80);
+
+            if (leftPct < 50 && topPct > 15) continue;
+            el.style.left = `${leftPct}%`;
+            el.style.top = `${topPct}%`;
+
+            el.getBoundingClientRect();
+
+            const rect = el.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const r = Math.min(rect.width, rect.height) * 0.5 + padding;
+
+            const overlaps = textArr.some(obj => {
+              const dx = cx - obj.x;
+              const dy = cy - obj.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              return dist < r + obj.r;
+            });
+
+
+            if (!overlaps) {
+              textArr.push(new Obj(cx, cy, r));
+              placed = true;
+              break;
+            }
+          }
+
+          if (!placed) {
+            const rect = el.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const r = Math.min(rect.width, rect.height) * 0.5;
+            textArr.push(new Obj(cx, cy, r));
+          }
+
+          el.addEventListener("mouseenter", () => {
+            originalImages[index].style.visibility = "visible";
+            el.style.opacity = 0.2;
+            visibleObj = index;
+          });
+
+          el.addEventListener("mousemove", () => {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const now = Date.now();
+            if (now - lastHoverPlayed > COOLDOWN_MS) {
+              playRandomSound(index);
+              lastHoverPlayed = now;
+            }
+          })
+          el.addEventListener("mouseout", () => {
+            el.style.opacity = 0.3;
+            originalImages[index].style.visibility = "hidden";
+            visibleObj = null
+          });
+        });
+
+        originalImages.forEach((img, index) => {
+          img.style.left = asciiImages[index].style.left;
+          img.style.top = asciiImages[index].style.top;
+          img.style.width = asciiImages[index].style.width
+        })
+
+        txt.forEach(t => segments.push(t.length + 1))
+
+        for (let t = 0; t < txt.length; t++) {
+          let pts = [], stks = [];
+          let sy = startY + t * lineHeight;
+          for (let i = 0; i < segments[t]; i++) {
+            let pt = new Point(startX + i * letterSpacing, sy);
+            if (i < 35) pt.locked = true;
+            pts.push(pt);
+            if (i > 0) stks.push(new Stick(pts[i - 1], pts[i]));
+          }
+          threads.push({ points: pts, sticks: stks });
+        }
+
+        soundFiles = soundFiles.map((path, index) => path += "fx" + (index + 1) + ".wav")
+        // soundFiles = soundFiles.map((path, index) => path += (index < 9 ? "0" : "") + (index + 1) + ".wav")
+
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        sounds = soundFiles.map(src => {
+          const a = new Audio(src);
+          a.preload = 'auto';
+          a.volume = 0.1;
+          a.crossOrigin = 'anonymous';
+          const source = audioCtx.createMediaElementSource(a);
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.value = 200;
+          filter.Q.value = 1;
+
+          source.connect(filter);
+          filter.connect(audioCtx.destination);
+
+          return { audio: a, filter };
+        });
+
+        ambient = new Audio('assets/sounds/ambient2.mp3');
+        ambient.loop = true;
+        ambient.volume = 0;
+        ambient.addEventListener("canplaythrough", () => { ambientLoaded = true; });
+
+      };
+
+      function playSound(index, pointIndex, totalPoints) {
+        const { audio, filter } = sounds[index % sounds.length];
+        const minFreq = 200;
+        const maxFreq = 10000;
+        const t = pointIndex / Math.max(totalPoints - 1, 1);
+        filter.frequency.setTargetAtTime(
+          minFreq + t * (maxFreq - minFreq),
+          audioCtx.currentTime,
+          0.05
+        );
+
+        audio.currentTime = 0;
+        audio.play().catch((e) => { console.log(e) });
+      }
+
+
+      function playRandomSound(tIndex = 0) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const { audio, filter } = sounds[Math.floor(p.random(tIndex * 10, (tIndex + 1) * 10)) % sounds.length];
+        const minFreq = 100;
+        const maxFreq = 10000;
+        filter.frequency.setTargetAtTime(
+          minFreq + p.random() * (maxFreq - minFreq),
+          audioCtx.currentTime,
+          0.05
+        );
+
+        audio.currentTime = 0;
+        audio.play().catch((e) => { console.log(e) });
+      }
+
+
+      window.onblur = function () {
+        stopDrag();
+        ambient.pause();
+        ambientStarted = false;
+      };
+
+      window.onfocus = function () {
+        if (!ambientStarted && ambientLoaded) {
+          ambient.play();
+          ambientStarted = true;
+        }
+      };
+
+      function startAmbient() {
+        if (!ambientStarted && ambientLoaded) {
+          ambient.play();
+          ambientStarted = true;
+        }
+      }
+
+      function stopDrag() {
+        capturedPoint = null;
+      }
+
+      p.draw = function () {
+        p.clear();
+        if (p.mouseIsPressed && p.mouseButton === p.LEFT && isStarted) {
+          if (capturedPoint) {
+            capturedPoint.x = p.lerp(capturedPoint.x, p.mouseX, 0.1);
+            capturedPoint.y = p.lerp(capturedPoint.y, p.mouseY, 0.1);
+            ambient.volume = Math.min(0.5, ambient.volume + 0.01);
+          }
+        } else {
+          capturedPoint = null;
+          if (ambientStarted) {
+            ambient.volume = Math.max(0, ambient.volume - 0.01);
+          }
+        }
+
+        // unlock();
+
+        threads.forEach(thread => {
+          thread.sticks.forEach((stick, index) => {
+            // if (!thread.points[index].locked) {
+            stick.c = p.lerpColor(p.color(stick.c), p.color(originalCol), 0.01)
+            // }
+          })
+        });
+
+        // Update + render threads
+        threads.forEach((thread, index) => {
+          updatePoints(thread.points);
+          for (let i = 0; i < loops; i++) updateSticks(thread.sticks);
+          collision(thread.points);
+
+          p.noStroke();
+          thread.sticks.forEach((stick, i) => {
+            p.fill(stick.c)
+            let char = txt[index].charAt(i % txt[index].length);
+            p.text(char, stick.a.x, stick.a.y);
+          });
+        });
+      };
+
+      p.mousePressed = function () {
+        if (!isStarted) return;
+
+        let closestDist = 60;
+        let capturedThreadIndex = -1;
+
+        threads.forEach((thread, threadIndex) => {
+          thread.points.forEach((pt) => {
+            let d = p.dist(p.mouseX, p.mouseY, pt.x, pt.y);
+            if (d < closestDist && !pt.locked) {
+              closestDist = d;
+              capturedPoint = pt;
+              capturedThreadIndex = threadIndex;
+            }
+          });
+        });
+
+        if (capturedThreadIndex > -1) {
+          threads[capturedThreadIndex].sticks.forEach(stick => stick.c = highlightCol);
+          seekAmbient(capturedThreadIndex);
+          startAmbient();
+        }
+      };
+
+      function seekAmbient(capturedThreadIndex) {
+        const target = ((capturedThreadIndex + p.random(0, 10)) / threads.length) * ambient.duration;
+
+        const doSeek = () => {
+          ambient.currentTime = target;
+
+          const onSeeked = () => {
+            ambient.removeEventListener('seeked', onSeeked);
+            ambient.play()
+              .then(() => { ambientStarted = true; })
+              .catch(e => console.log(e));
+          };
+
+          ambient.addEventListener('seeked', onSeeked);
+        };
+
+        // if metadata isn't loaded yet, wait for it
+        if (ambient.readyState < HTMLMediaElement.HAVE_METADATA) {
+          ambient.addEventListener('loadedmetadata', doSeek, { once: true });
+          ambient.load();
+        } else {
+          doSeek();
+        }
+      }
+
+      function unlock() {
+        const unlockRadius = 15;
+        threads.forEach((thread, threadIndex) => {
+          thread.points.forEach((pt, index) => {
+            if (index !== 0) {
+              let d = p.dist(p.mouseX, p.mouseY, pt.x, pt.y);
+              if (d < unlockRadius) {
+                playSound(threadIndex, index, thread.points.length);
+                // if (index < thread.sticks.length) thread.sticks[index].c = highlightCol;
+              }
+            }
+          });
+        });
+      }
+
+      function updatePoints(points) {
+        for (let i = 0; i < points.length; i++) {
+          let pt = points[i];
+          let bx = pt.x, by = pt.y;
+          if (!pt.locked) {
+            let vx = (pt.x - pt.prevX) * 0.9
+            let vy = (pt.y - pt.prevY) * 0.9;
+            pt.x += vx;
+            pt.y += vy;
+            pt.x += 0.5 * grav * p.sq(p.frameRate());
+          }
+          pt.prevX = bx; pt.prevY = by;
+        }
+      }
+
+      function updateSticks(sticks) {
+        for (let i = 0; i < sticks.length; i++) {
+          let s = sticks[i];
+          let a = p.createVector(s.a.x, s.a.y);
+          let b = p.createVector(s.b.x, s.b.y);
+          let center = p5.Vector.add(a, b).div(2);
+          let dir = p5.Vector.sub(a, b).normalize();
+          if (!s.a.locked) { let pos = p5.Vector.add(center, p5.Vector.mult(dir, s.length / 2)); s.a.x = pos.x; s.a.y = pos.y; }
+          if (!s.b.locked) { let pos = p5.Vector.sub(center, p5.Vector.mult(dir, s.length / 2)); s.b.x = pos.x; s.b.y = pos.y; }
+        }
+      }
+
+      function collision(points) {
+        for (let i = 0; i < points.length; i++) {
+          let pt = points[i];
+          let vx = pt.x - pt.prevX;
+          let vy = pt.y - pt.prevY;
+          let pv = p.createVector(pt.x, pt.y);
+
+          if (!pt.locked) {
+            if (pt.y >= ground) { pt.y = ground - textS / 2; pt.prevY = pt.y + vy * bounce; }
+            if (pt.y <= 0) { pt.y = 0; pt.prevY = pt.y + vy * bounce; }
+            if (pt.x <= 0) { pt.x = 0; pt.prevX = pt.x + vx * bounce; }
+            if (pt.x >= p.width) { pt.x = p.width; pt.prevX = pt.x - vx * bounce; }
+          }
+        }
+      }
+
+      p.windowResized = function () {
+        p.resizeCanvas(p.windowWidth, p.windowHeight);
+        ground = p.height;
+      }
+    
+    }, document.getElementById('container'));
+
+    const modal = document.getElementById('sound-modal');
+    const okBtn = document.getElementById('sound-ok');
+
+    function dismissModal() {
+      modal.style.display = 'none';
+      document.querySelector('#container').style.display = 'block';
+      isStarted = true;
+    }
+
+    okBtn.addEventListener('click', dismissModal);
+
+    okBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        dismissModal();
+      }
+    });
+
+    modal.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') dismissModal();
+    });
+
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Audio notice');
+    okBtn.focus();
+  </script>
+</body>
+
+</html>
