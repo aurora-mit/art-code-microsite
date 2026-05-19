@@ -4,20 +4,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>anna zhang</title>
+    <title>Orientation Over Optimization — Anna Zhang</title>
+    <meta name="description" content="An essay on designing AI interfaces to support human thinking and creativity, and an introduction to Prompted — a tool that generates questions, not answers.">
+    <meta name="author" content="Anna Zhang">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M16 4 L28 16 L16 28 L4 16 Z' fill='none' stroke='%236366f1' stroke-width='2'/></svg>">
     <link rel="stylesheet" href="../../style/shared.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;500&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ecedf2;
+            --fg: #1e1e22;
+            --fg-soft: #71737e;
+            --rule: #d0d1d8;
+            --accent: #6366f1;
+            --tool-bg: #0a0a0a;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #17171c;
+                --fg: #dddde2;
+                --fg-soft: #85858f;
+                --rule: #2d2d34;
+                --tool-bg: #0a0a0a;
+            }
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+            }
+        }
+
+        html {
+            font-size: 18px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: Spectral, Georgia, serif;
+            line-height: 1.72;
+            min-height: 100vh;
+        }
+
+        #backlink {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            background-color: transparent;
+        }
+
+        #backlink a {
+            font-family: Spectral, Georgia, serif;
+            font-size: 0.78rem;
+            font-style: italic;
+            letter-spacing: 0.02em;
+            color: var(--fg-soft);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        #backlink a:hover {
+            color: var(--fg);
+        }
+
+        #backlink a:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .page {
+            max-width: 34rem;
+            margin: 0 auto;
+            padding: 6rem 1.5rem 0;
+        }
+
+        /* — Masthead — */
+        .masthead {
+            margin-bottom: 3.5rem;
+        }
+
+        .masthead h1 {
+            font-family: 'Doto', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 500;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            line-height: 1.35;
+            margin-bottom: 0.65rem;
+        }
+
+        .masthead .author {
+            font-size: 0.88rem;
+            color: var(--fg-soft);
+            font-style: normal;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        /* — Essay body — */
+        .essay p {
+            margin-bottom: 1.35rem;
+            hanging-punctuation: first;
+        }
+
+        .essay p:last-child {
+            margin-bottom: 0;
+        }
+
+        .essay em {
+            font-style: italic;
+        }
+
+        .essay a {
+            color: var(--fg);
+            text-decoration: none;
+            border-bottom: 1px solid var(--fg-soft);
+            transition: border-color 0.2s ease;
+        }
+
+        .essay a:hover {
+            border-color: var(--fg);
+        }
+
+        .essay a:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* — Tool embed — */
+        .tool-section {
+            margin-top: 3rem;
+            width: 100%;
+            background: var(--tool-bg);
+            position: relative;
+        }
+
+        .tool-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .tool-placeholder span {
+            font-family: 'Doto', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 400;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #3a3a44;
+            transition: opacity 0.4s ease;
+        }
+
+        .tool-placeholder.loaded span {
+            opacity: 0;
+        }
+
+        .tool-frame {
+            width: 100%;
+            height: 85vh;
+            min-height: 540px;
+            border: none;
+            display: block;
+            background: transparent;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tool-fallback {
+            background: var(--tool-bg);
+            text-align: center;
+            padding: 0.8rem 0 1.2rem;
+        }
+
+        .tool-fallback a {
+            font-size: 0.72rem;
+            color: #797979;
+            text-decoration: none;
+            border-bottom: 1px solid #3a3a3a;
+            letter-spacing: 0.02em;
+            transition: color 0.2s ease;
+        }
+
+        .tool-fallback a:hover {
+            color: #a0a0a0;
+        }
+
+        .tool-fallback a:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* — Footer — */
+        .footer {
+            background: var(--bg);
+            padding: 3.5rem 1.5rem 4rem;
+        }
+
+        .footer-inner {
+            max-width: 28rem;
+            margin: 0 auto;
+        }
+
+        .footer .bio {
+            font-size: 0.8rem;
+            color: var(--fg-soft);
+            line-height: 1.72;
+        }
+
+        .footer .bio a {
+            color: var(--fg);
+            text-decoration: none;
+            border-bottom: 1px solid var(--fg-soft);
+            transition: border-color 0.2s ease;
+        }
+
+        .footer .bio a:hover {
+            border-color: var(--fg);
+        }
+
+        .footer .bio a:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* — Responsive — */
+        @media (max-width: 600px) {
+            html { font-size: 16px; }
+            .page { padding: 3.5rem 1.25rem 0; }
+            .masthead { margin-bottom: 2.5rem; }
+            .masthead h1 { font-size: 1.3rem; }
+            .tool-section { margin-top: 2rem; }
+            .tool-frame { height: 70vh; min-height: 400px; }
+            .footer { padding: 2.5rem 1.25rem 3rem; }
+            .footer-inner { max-width: 28rem; }
+            #backlink { top: 1rem; left: 1.25rem; }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="member-page">
-        <nav id="backlink">
-            <a href="../../">&larr; Back to map</a>
-        </nav>
+    <nav id="backlink">
+        <a href="../../">&larr; Back to map</a>
+    </nav>
 
-        <div class="member-header">
-            <h1>anna zhang</h1>
+    <main class="page">
+
+        <header class="masthead">
+            <h1>Orientation Over Optimization</h1>
+            <div class="author">Anna Zhang</div>
+        </header>
+
+        <article class="essay">
+            <p>Most AI tools are built around a logic of optimization. You ask a question, the system generates an answer, and the interaction moves toward resolution as quickly as possible. Interfaces compete on latency. Iteration is instant and unlimited. The assumption is that the point of thinking with a tool is to arrive at an outcome, and the faster you get there, the better.</p>
+
+            <p>But there is a longer tradition of tools designed around a different logic: not <em>optimization</em> but <em>orientation</em>. The I Ching, Marshall McLuhan's DEW Line deck, Brian Eno and Peter Schmidt's <em>Oblique Strategies</em> — these systems do not give you answers to accept. They give you material to think with. The I Ching may give you an image like "Fire in the lake: the image of Revolution." McLuhan's cards carry provocations like "The law of averages will clobber you every time." <em>Oblique Strategies</em> issues directives like "Honor thy error as a hidden intention." None of these is advice or a solution. Each is a disruption. What it has to do with your situation, and what to make of it, is yours to work out.</p>
+
+            <p>It is easy to dismiss these as mystical, but I find it more productive to think of them as algorithms: an input, a procedure, an output. What makes them different from the algorithms that increasingly shape our thinking is what the output is for. The computation is not complete when the system produces its output. It is complete when you have made sense of it.</p>
+
+            <p>These systems also ask you to engage with intention. Consulting the I Ching is a deliberate act; you bring a real question and commit to working with what you receive rather than shopping for a different answer. There is a ritual weight to the encounter that distinguishes it from the casual, infinitely repeatable interaction most AI interfaces are designed around.</p>
+
+            <p>The dominant logic of AI today is not inevitable. It is built, and it can be built differently. I wanted to design otherwise, to see what would happen if a tool powered by generative models worked inside this older tradition. AI's real strength is not accuracy but responsiveness: it meets the particular framing and language you bring, in ways a fixed deck of cards cannot.</p>
+
+            <p><a href="https://prompted.anna-zhang.com/" target="_blank" rel="noopener"><em>Prompted</em></a> brings these values — orientation over optimization — into an AI interaction. It generates only questions: intentionally indirect provocations designed to reframe rather than resolve. To initiate a consultation, you hold rather than click — a gesture that asks for intention. Once the consultation begins, the input is locked. What follows is a delay you cannot predict. When the system is ready, a second hold is required to receive the response: three to five questions that appear as connected nodes on the canvas. They cannot be regenerated. What appears is what you work with. To get anything further, you have to bring more of your own thinking.</p>
+
+            <p>The canvas grows as a spatial record of this process. Unlike chat interfaces that scroll past earlier exchanges, it preserves everything — branches, dead ends, returns — becoming a record of the thinking itself. The thinking stays with the user. The system provides provocations; you do the sensemaking.</p>
+
+            <p>Sometimes, sitting with the questions, I notice my mind doing something it rarely does with AI: it wanders. Links two ideas I hadn't put together. Surfaces an assumption I didn't know I was carrying. Arrives somewhere I wouldn't have reached by re-prompting a chatbot, refining toward a clearer answer. That wandering isn't aimlessness — it's the kind of thinking that gets foreclosed when every interaction is structured around producing output. It needs open time, not optimized time.</p>
+
+            <p>An <em>optimizing</em> system treats an unresolved situation as a problem to compress. An <em>orienting</em> system gives you a way to see your situation that you did not have before, to open up new possibilities.</p>
+        </article>
+
+    </main>
+
+    <section class="tool-section" aria-label="Prompted tool">
+        <div class="tool-placeholder" id="tool-placeholder" aria-hidden="true">
+            <span>Prompted</span>
         </div>
-    </div>
+        <iframe
+            class="tool-frame"
+            id="tool-frame"
+            src="https://prompted.anna-zhang.com/"
+            title="Prompted"
+            loading="lazy"
+            allow="clipboard-write"
+        ><p style="color:#8a8a8a;text-align:center;padding:2rem;font-family:'Doto',sans-serif;font-size:0.82rem;letter-spacing:0.1em">Visit <a href="https://prompted.anna-zhang.com/" style="color:#8a8a8a">Prompted</a></p></iframe>
+        <p class="tool-fallback"><a href="https://prompted.anna-zhang.com/" target="_blank" rel="noopener">Open <em>Prompted</em> in a new window</a></p>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <p class="bio"><a href="https://anna-zhang.com/">Anna Zhang</a> is an artist and creative technologist whose work explores how we relate to — and can reimagine — technology. Her work has been featured in <em>Real Life</em>, <em>BuzzFeed</em>, and <em>Forbes</em>, and exhibited at venues including the National Museum of American History and Gray Area. She has been recognized by the Judson-Morrissey Excellence in New Media Award and Forbes 30 Under 30.</p>
+        </div>
+    </footer>
+
+    <script>
+    (function () {
+        var frame = document.getElementById('tool-frame');
+        var placeholder = document.getElementById('tool-placeholder');
+        frame.addEventListener('load', function () {
+            placeholder.classList.add('loaded');
+        });
+    })();
+    </script>
 </body>
 
 </html>
