@@ -327,6 +327,33 @@ searchForm.addEventListener('submit', e => {
 });
 setMarquee('art and code!');
 
+// bottom marquee
+(function () {
+    const bottomTrack = document.querySelector('#marquee-bottom .track');
+    const text = '[Website Title TBD]';
+
+    const probe = document.createElement('span');
+    probe.className = 'cell';
+    probe.textContent = text;
+    bottomTrack.appendChild(probe);
+    const cellW = probe.offsetWidth || 120;
+
+    const copies = Math.max(6, Math.ceil(window.innerWidth / cellW) + 2);
+    for (let i = 1; i < copies; i++) {
+        const cell = document.createElement('span');
+        cell.className = 'cell';
+        cell.textContent = text;
+        bottomTrack.appendChild(cell);
+    }
+
+    document.documentElement.style.setProperty('--marquee-bottom-shift', `-${(100 / copies).toFixed(4)}%`);
+    document.documentElement.style.setProperty('--marquee-bottom-duration', `${(cellW / MARQUEE_SPEED).toFixed(2)}s`);
+
+    bottomTrack.style.animation = 'none';
+    void bottomTrack.offsetWidth;
+    bottomTrack.style.animation = 'marquee-bottom var(--marquee-bottom-duration, 2s) linear infinite';
+})();
+
 // reshuffle existing plots: re-randomize sizes + masses, lay out in fresh grid
 function reshufflePlots() {
     const plots = Array.from(document.querySelectorAll('.plot'));
