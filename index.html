@@ -12,6 +12,11 @@
 <body>
 
     <div id="coords">0, 0</div>
+
+    <div id="marquee">
+        <span class="track"></span>
+    </div>
+
     <div id="canvas">
         <!-- <div id="block-1"></div>
         <div id="block-2"></div>
@@ -21,7 +26,7 @@
         <div id="block-6"></div>
         <div id="block-7"></div> -->
         <form class="scattered" id="form-search" onsubmit="return false">
-            <input type="text" placeholder="art and code?">
+            <input type="text" placeholder="art and code!">
             <button>OK</button>
         </form>
         <form class="scattered" id="form-select" onsubmit="return false">
@@ -38,6 +43,10 @@
             <input type="range" min="0" max="100" value="50">
         </div>
 
+        <div class="scattered" id="slider-v">
+            <input type="range" min="0" max="100" value="50" orient="vertical">
+        </div>
+
         <div class="scattered" id="checkboxes">
             <label><input type="checkbox"> art &amp; code</label>
             <label><input type="checkbox" checked> art &amp; code</label>
@@ -50,14 +59,23 @@
             <label><input type="radio" name="r1"> maybe</label>
         </div>
 
-        <form class="scattered" id="form-note" onsubmit="return false">
+        <!-- <form class="scattered" id="form-note" onsubmit="return false">
             <textarea placeholder="leave a message"></textarea>
-        </form>
+        </form> -->
 
-        <button class="scattered" id="btn-ok">OK (red)</button>
-
-        <div class="scattered" id="quote">
-            <input type="text" value="art&code&art&code&art&code">
+        <div id="title">
+            <button>NEW INC Y12</button>
+            <button>Art and Code Track</button>
+            <form id="about" onsubmit="return false">
+                <label>
+                    <span>about</span>
+                    <textarea readonly rows="3">A microsite that showcases members of NEW INC's Y12 Art &amp; Code track</textarea>
+                </label>
+                <label>
+                    <span>credits</span>
+                    <textarea readonly rows="2">X.A.Li, viola he, claude code, rhizome</textarea>
+                </label>
+            </form>
         </div>
 
     </div>

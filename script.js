@@ -4,6 +4,12 @@ const coordsEl = document.getElementById('coords');
 const CANVAS_W = 4000;
 const CANVAS_H = 3000;
 
+// central region for member plots
+const PLOT_W = 2600;
+const PLOT_H = 1800;
+const PLOT_X = (CANVAS_W - PLOT_W) / 2;
+const PLOT_Y = (CANVAS_H - PLOT_H) / 2;
+
 let pan = { x: -100, y: -60 };
 let zoom = 1;
 let dragging = false;
@@ -31,6 +37,8 @@ document.addEventListener('mousedown', e => {
 
     if (e.target.classList.contains('resize-handle')) {
         resizePlot = e.target.closest('.plot');
+        canvas.appendChild(resizePlot); // bring to front
+        resizePlot.style.zIndex = 2; // above #title (z-index 1)
         resizeStart = { x: e.clientX, y: e.clientY };
         resizeOrigin = { w: resizePlot.offsetWidth, h: resizePlot.offsetHeight };
         const sw = resizePlot.style.width;
@@ -47,6 +55,8 @@ document.addEventListener('mousedown', e => {
     const plot = e.target.closest('.plot');
     if (plot) {
         dragPlot = plot;
+        canvas.appendChild(plot); // bring to front
+        plot.style.zIndex = 2; // above #title (z-index 1)
         dragPlotStart = { x: e.clientX, y: e.clientY };
         dragPlotOrigin = { x: parseInt(plot.style.left), y: parseInt(plot.style.top) };
         document.body.classList.add('is-dragging');
@@ -87,6 +97,12 @@ document.addEventListener('mouseup', e => {
             const link = dragPlot.querySelector('a');
             if (link) window.location.href = link.href;
         }
+    }
+    if (resizePlot) {
+        // rebase so future slider scaling stays proportional to the new size
+        const mult = (typeof widthMult === 'function') ? widthMult() : 1;
+        const w = parseFloat(resizePlot.style.width);
+        if (!isNaN(w) && mult > 0) resizePlot.dataset.baseW = (w / mult).toString();
     }
     dragging = false;
     dragPlot = null;
@@ -140,8 +156,11 @@ function buildPlot(member, x, y) {
         plot.style.background = randFmt(randDeg, member.accent, randCol);
         plot.style.setProperty('--accent', member.accent);
     }
-    plot.style.width = widths[Math.floor(Math.random() * widths.length)] + 'px';
+    const baseW = widths[Math.floor(Math.random() * widths.length)];
+    plot.style.width = baseW + 'px';
+    plot.dataset.baseW = baseW;
     plot.style.height = heights[Math.floor(Math.random() * heights.length)] + 'px';
+    plot.style.setProperty('--mass', (0.5 + Math.random()).toFixed(2));
     plot.innerHTML = `<a href="members/${member.slug}/">${member.name}<br><em>${member.tagline}</em>`;
     if (member.image) {
         plot.innerHTML += `<img src="${member.image}" style="padding-left: 25px; max-width: 66%; max-height: 66%;" alt="${member.name}">`;
@@ -158,12 +177,6 @@ async function init() {
         const j = Math.floor(Math.random() * (i + 1));
         [members[i], members[j]] = [members[j], members[i]];
     }
-
-    // central region for member plots
-    const PLOT_W = 2600;
-    const PLOT_H = 1800;
-    const PLOT_X = (CANVAS_W - PLOT_W) / 2;
-    const PLOT_Y = (CANVAS_H - PLOT_H) / 2;
 
     // frame band around the plot region
     const FRAME_GAP = 80;
@@ -252,3 +265,108 @@ async function init() {
 }
 
 init();
+
+// gravity with vertical slider
+const gravitySlider = document.querySelector('#slider-v input');
+gravitySlider.addEventListener('input', () => {
+    const v = parseInt(gravitySlider.value, 10); // 0..100
+    const offset = (50 - v) * 12; // top of slider (100) pulls up
+    document.documentElement.style.setProperty('--gravity', offset + 'px');
+});
+
+// width with horizontal slider
+const widthSlider = document.querySelector('#slider input');
+function widthMult() {
+    return Math.pow(2, (parseInt(widthSlider.value, 10) - 50) / 50);
+}
+function applyWidthMult() {
+    const mult = widthMult();
+    document.querySelectorAll('.plot').forEach(p => {
+        const base = parseFloat(p.dataset.baseW);
+        if (!isNaN(base)) p.style.width = (base * mult) + 'px';
+    });
+}
+widthSlider.addEventListener('input', applyWidthMult);
+
+// marquee
+const searchForm = document.getElementById('form-search');
+const searchInput = searchForm.querySelector('input');
+const marqueeTrack = document.querySelector('#marquee .track');
+const MARQUEE_SPEED = 80; // px/sec
+function setMarquee(text) {
+    marqueeTrack.replaceChildren();
+    const txt = text.trim();
+    if (!txt) return;
+
+    const probe = document.createElement('span');
+    probe.className = 'cell';
+    probe.textContent = txt;
+    marqueeTrack.appendChild(probe);
+    const cellW = probe.offsetWidth || 120;
+
+    const copies = Math.max(6, Math.ceil(window.innerWidth / cellW) + 2);
+    for (let i = 1; i < copies; i++) {
+        const cell = document.createElement('span');
+        cell.className = 'cell';
+        cell.textContent = txt;
+        marqueeTrack.appendChild(cell);
+    }
+
+    document.documentElement.style.setProperty('--marquee-shift', `-${(100 / copies).toFixed(4)}%`);
+    // constant px/sec regardless of cell size
+    document.documentElement.style.setProperty('--marquee-duration', `${(cellW / MARQUEE_SPEED).toFixed(2)}s`);
+
+    // restart animation
+    marqueeTrack.style.animation = 'none';
+    void marqueeTrack.offsetWidth;
+    marqueeTrack.style.animation = '';
+}
+searchForm.addEventListener('submit', e => {
+    e.preventDefault();
+    setMarquee(searchInput.value);
+});
+setMarquee('art and code!');
+
+// reshuffle existing plots: re-randomize sizes + masses, lay out in fresh grid
+function reshufflePlots() {
+    const plots = Array.from(document.querySelectorAll('.plot'));
+    for (let i = plots.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [plots[i], plots[j]] = [plots[j], plots[i]];
+    }
+    const mult = widthMult();
+    plots.forEach(plot => {
+        const baseW = widths[Math.floor(Math.random() * widths.length)];
+        plot.dataset.baseW = baseW;
+        plot.style.width = (baseW * mult) + 'px';
+        plot.style.height = heights[Math.floor(Math.random() * heights.length)] + 'px';
+        plot.style.setProperty('--mass', (0.5 + Math.random()).toFixed(2));
+    });
+    const cols = Math.ceil(Math.sqrt(plots.length));
+    const rows = Math.ceil(plots.length / cols);
+    const cellW = PLOT_W / cols;
+    const cellH = PLOT_H / rows;
+    plots.forEach((plot, i) => {
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        const w = parseInt(plot.style.width) || 400;
+        const h = parseInt(plot.style.height) || 300;
+        const jitterX = Math.random() * Math.max(0, cellW - w);
+        const jitterY = Math.random() * Math.max(0, cellH - h);
+        let x = PLOT_X + col * cellW + jitterX;
+        let y = PLOT_Y + row * cellH + jitterY;
+        x = Math.min(x, PLOT_X + PLOT_W - w);
+        y = Math.min(y, PLOT_Y + PLOT_H - h);
+        plot.style.left = x + 'px';
+        plot.style.top = y + 'px';
+    });
+}
+
+// title buttons: NEW INC -> reshuffle, Art and Code -> toggle about panel
+const titleButtons = document.querySelectorAll('#title button');
+titleButtons[0].addEventListener('click', reshufflePlots);
+const aboutPanel = document.getElementById('about');
+titleButtons[1].addEventListener('click', () => {
+    const open = aboutPanel.classList.toggle('is-open');
+    titleButtons[1].classList.toggle('is-active', open);
+});

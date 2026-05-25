@@ -48,11 +48,18 @@ body.is-dragging * {
     align-items: flex-end;
     padding: 12px;
     cursor: grab;
-    transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s, transform 0.18s ease-out,
+        left 0.5s ease-out, top 0.5s ease-out,
+        width 0.5s ease-out, height 0.5s ease-out;
     overflow: hidden;
+    transform: translateY(calc(var(--gravity, 0px) * var(--mass, 1)));
 }
 
-.plot > * {
+body.is-dragging .plot {
+    transition: box-shadow 0.2s, transform 0.18s ease-out;
+}
+
+.plot>* {
     min-width: 0;
     min-height: 0;
 }
@@ -114,8 +121,8 @@ body.is-dragging * {
 
 
 #form-search input {
-    width: 240px;
-    padding: 6px;
+    width: 280px;
+    padding: 8px;
     font: inherit;
     border: 2px solid #000;
 }
@@ -126,6 +133,18 @@ body.is-dragging * {
     border: 2px solid #000;
     background: #fff;
     cursor: pointer;
+    transition: background 0.08s, color 0.08s;
+}
+
+#form-search button:hover {
+    background: transparent;
+    /* color: var(--bg); */
+}
+
+#form-search button:active {
+    background: #1500ff;
+    color: var(--bg);
+    transform: translateY(1px);
 }
 
 #form-select select {
@@ -137,6 +156,15 @@ body.is-dragging * {
 
 #slider input {
     width: 200px;
+}
+
+#slider-v input[type=range] {
+    writing-mode: vertical-lr;
+    -webkit-appearance: slider-vertical;
+    appearance: slider-vertical;
+    direction: rtl;
+    width: auto;
+    height: 200px;
 }
 
 #checkboxes {
@@ -167,18 +195,122 @@ body.is-dragging * {
     resize: none;
 }
 
-#btn-ok {
+#title {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    white-space: nowrap;
+    z-index: 1;
+}
+
+#title button {
     padding: 8px 16px;
     font: inherit;
     border: 2px solid #000;
-    background: #ff0000;
+    background: #fff;
+    color: #000;
     cursor: pointer;
+    transition: background 0.08s, color 0.08s;
 }
 
-#quote input {
-    width: 420px;
-    padding: 6px;
-    font: inherit;
-    border: none;
+#title button:hover {
     background: transparent;
+    /* color: var(--bg); */
+}
+
+#title button:active {
+    background: #0004ff;
+    color: var(--bg);
+    transform: translateY(1px);
+}
+
+#about {
+    position: absolute;
+    left: calc(100% + 2px);
+    top: 10px;
+    /* left: 50%; */
+    /* transform: translateX(-50%); */
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+    padding: 22px;
+    color: var(--fg);
+    white-space: normal;
+}
+
+#about.is-open {
+    display: flex;
+}
+
+#about label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    cursor: default;
+}
+
+#about label>span {
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+    opacity: 0.7;
+}
+
+#about textarea {
+    width: 300px;
+    padding: 10px;
+    font: inherit;
+    line-height: 1.4;
+    border: 2px solid #000;
+    background: #fff;
+    resize: none;
+}
+
+#title button.is-active,
+#title button.is-active:hover {
+    background: #0004ff;
+    color: var(--bg);
+}
+
+#marquee {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 44px;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+}
+
+#marquee .track {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: marquee var(--marquee-duration, 2s) linear infinite;
+}
+
+#marquee .cell {
+    padding-right: 1.5em;
+}
+
+#marquee:has(.track:empty) {
+    display: none;
+}
+
+@keyframes marquee {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(var(--marquee-shift, -8.3333%));
+    }
 }
