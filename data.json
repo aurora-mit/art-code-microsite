@@ -6,10 +6,11 @@
         "accent": "#c8ff00"
     },
     {
-        "name": "anna zhang",
+        "name": "Anna Zhang",
         "slug": "anna-zhang",
-        "tagline": "Orientation Over Optimization",
-        "accent": "#6366f1"
+        "tagline": "Orientation Over Optimization: Prompted, an AI you think with, not one that thinks for you",
+        "image": "members/anna-zhang/assets/Prompted-Hero.png",
+        "accent": "#a5b4fc"
     },
     {
         "name": "X. A. Li",
