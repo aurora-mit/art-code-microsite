@@ -10,7 +10,7 @@
         "slug": "anna-zhang",
         "tagline": "Orientation Over Optimization: Prompted, an AI you think with, not one that thinks for you",
         "image": "m/anna-zhang/assets/Prompted-Hero.png",
-        "accent": "#a5b4fc"
+        "accent": "#17171c1A"
     },
     {
         "name": "X. A. Li",
@@ -37,7 +37,7 @@
         "slug": "nicci",
         "tagline": "Notes on misusing interfaces",
         "image": "m/nicci/assets/test.png",
-        "accent": "white"
+        "accent": "#6636061A"
     },
     {
         "name": "Tara Kelton",
@@ -49,6 +49,6 @@
         "name": "Morry Kolman",
         "slug": "morry",
         "tagline": "First Light: Emergence",
-        "accent": "#000000"
+        "accent": "#bfb45c"
     }
 ]

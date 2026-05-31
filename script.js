@@ -177,7 +177,7 @@ document.addEventListener('touchend', e => {
 });
 
 let degrees = ['135deg', '90deg', 'to top', 'to left', '45deg', '180deg'];
-let endColors = ['#ffffff', '#ff5af48d', 'transparent', '#0055ff78'];
+let endColors = ['#ffffff', '#d0d0d08d', 'transparent', '#0055ff2c'];
 let formats = [
     (deg, accent, end) => `linear-gradient(${deg}, ${accent}, ${end})`,
     (deg, accent, end) => `linear-gradient(${deg}, ${end}, ${accent}, ${end})`,
@@ -194,7 +194,7 @@ function buildPlot(member, x, y) {
         let randDeg = degrees[Math.floor(Math.random() * degrees.length)];
         let randCol = endColors[Math.floor(Math.random() * endColors.length)];
         let randFmt = formats[Math.floor(Math.random() * formats.length)];
-        plot.style.background = randFmt(randDeg, member.accent, randCol);
+        plot.dataset.gradient = randFmt(randDeg, member.accent, randCol);
         plot.style.setProperty('--accent', member.accent);
     }
     const baseW = widths[Math.floor(Math.random() * widths.length)];
@@ -202,16 +202,30 @@ function buildPlot(member, x, y) {
     plot.dataset.baseW = baseW;
     plot.style.height = heights[Math.floor(Math.random() * heights.length)] + 'px';
     plot.style.setProperty('--mass', (0.5 + Math.random()).toFixed(2));
-    plot.innerHTML = `<a href="m/${member.slug}/">${member.name}<br><em>${member.tagline}</em>`;
+    plot.innerHTML = `<a href="m/${member.slug}/"><span class="p-name">${member.name}</span><em class="p-title">${member.tagline}</em>`;
     if (member.image) {
-        plot.innerHTML += `<img src="${member.image}" style="padding-left: 25px; max-width: 66%; max-height: 66%;" alt="${member.name}">`;
+        plot.innerHTML += `<img class="p-content" src="${member.image}" style="padding-left: 25px; max-width: 66%; max-height: 66%;" alt="${member.name}">`;
     }
     plot.innerHTML += `</a><div class="resize-handle"></div>`;
     return plot;
 }
 
+// pinned UI controls that plots should not cover
+const PINNED_IDS = ['checkboxes', 'form-search', 'slider-v', 'slider'];
+function uiObstacleRects() {
+    const pad = 30;
+    return PINNED_IDS.map(id => document.getElementById(id))
+        .filter(el => el && el.style.left)
+        .map(el => ({
+            x: parseFloat(el.style.left) - pad,
+            y: parseFloat(el.style.top) - pad,
+            w: el.offsetWidth + pad * 2,
+            h: el.offsetHeight + pad * 2,
+        }));
+}
+
 // Shared placement function used by both init and reshuffle
-function placePlots(plots, mult) {
+function placePlots(plots, mult, obstacles = []) {
     const PAD = 20;
     const placed = [];
 
@@ -222,6 +236,9 @@ function placePlots(plots, mult) {
         w: TITLE_PAD_W * 2,
         h: TITLE_PAD_H * 2
     });
+
+    // keep plots clear of the pinned UI controls
+    for (const o of obstacles) placed.push(o);
 
     function fits(x, y, w, h) {
         if (x < PLOT_X || y < PLOT_Y || x + w > PLOT_X + PLOT_W || y + h > PLOT_Y + PLOT_H) return false;
@@ -349,7 +366,29 @@ async function init() {
         canvas.appendChild(plot);
         plotEls.push(plot);
     });
-    placePlots(plotEls, 1);
+    // pin controls to fixed spots
+    const vx0 = -pan.x / zoom;     // left edge
+    const vy0 = -pan.y / zoom;        // top edge
+    const vw = window.innerWidth / zoom;
+    const vh = window.innerHeight / zoom;
+    const m = 50 / zoom;          // edge margin
+    const mx = 30 / zoom;
+
+    const pinned = new Set();
+    function pin(id, left, top) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.left = left(el.offsetWidth) + 'px';
+        el.style.top = top(el.offsetHeight) + 'px';
+        pinned.add(el);
+    }
+    pin('checkboxes', () => vx0 + mx, () => vy0 + m);
+    pin('form-search', w => vx0 + vw - w - mx, h => vy0 + m);
+    pin('slider-v', w => vx0 + vw - w - mx, h => vy0 + (vh - h) / 2);
+    pin('slider', w => vx0 + (vw - w) / 2, h => vy0 + vh - h - m);
+
+    // place plots
+    placePlots(plotEls, 1, uiObstacleRects());
 
     // avoid overlaps
     function overlaps(x, y, w, h) {
@@ -360,8 +399,9 @@ async function init() {
         );
     }
 
-    // scatter html elements
-    const scatteredEls = Array.from(document.querySelectorAll('.scattered'));
+    // scatter remaining html elements
+    const scatteredEls = Array.from(document.querySelectorAll('.scattered'))
+        .filter(el => !pinned.has(el));
     // shuffle order
     for (let i = scatteredEls.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -396,9 +436,24 @@ async function init() {
     });
 
     applyTransform();
+    applyPlotView();
 }
 
 init();
+
+// checkbox toggles
+const viewChecks = Array.from(document.querySelectorAll('#checkboxes .check'));
+function applyPlotView() {
+    canvas.classList.toggle('hide-name', !viewChecks[0].checked);
+    canvas.classList.toggle('hide-title', !viewChecks[1].checked);
+    canvas.classList.toggle('hide-content', !viewChecks[2].checked);
+    const gradientOn = viewChecks[3].checked;
+    canvas.classList.toggle('no-gradient', !gradientOn);
+    document.querySelectorAll('.plot').forEach(p => {
+        p.style.background = gradientOn ? (p.dataset.gradient || '') : '';
+    });
+}
+viewChecks.forEach(cb => cb.addEventListener('change', applyPlotView));
 
 // gravity with vertical slider
 const gravitySlider = document.querySelector('#slider-v input');
@@ -495,7 +550,7 @@ function reshufflePlots() {
         const j = Math.floor(Math.random() * (i + 1));
         [plots[i], plots[j]] = [plots[j], plots[i]];
     }
-    placePlots(plots, widthMult());
+    placePlots(plots, widthMult(), uiObstacleRects());
 }
 
 // title buttons: NEW INC -> reshuffle, Art and Code -> toggle about panel
