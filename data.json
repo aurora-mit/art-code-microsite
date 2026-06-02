@@ -50,5 +50,11 @@
         "slug": "morry",
         "tagline": "First Light: Emergence",
         "accent": "#bfb45c"
+    },
+    {
+        "name": "Shakti Mb",
+        "slug": "shakti-mb",
+        "tagline": "Intimacy when the other side is a variable",
+        "accent": "#c9a0dc"
     }
 ]
