@@ -12,6 +12,23 @@
     font-style: italic;
 }
 
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#back, #back a, #back a:visited {
+    font-family: 'Arial Narrow', Arial, Helvetica, sans-serif;
+    font-size: 1em;
+    padding: 10px 10px 30px 10px;
+    color: #663606;
+}
+
+#back a:hover {
+    text-decoration: none;
+    opacity: 0.6;
+}
+
 .guide {
     font-family: 'Computer Modern', 'Georgia', serif;
     font-size: 1.2em;
@@ -115,6 +132,26 @@ sub {
 
 #highlight .word.revealed {
     color: #663606;
+}
+
+#bio {
+    font-family: 'Arial Narrow', Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    font-size: .8em;
+    margin-top: 50px;
+    padding-top: 40px;
+    line-height: 1.14em;
+    border-top: 1px dashed #663606;
+    letter-spacing: 0.01em;
+}
+
+#bio a, #bio a:visited {
+    color: #663606;
+}
+
+#bio a:hover {
+    opacity: 0.6;
+    text-decoration: none;
 }
 
 @media (max-width: 768px) {
