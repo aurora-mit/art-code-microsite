@@ -137,6 +137,187 @@
     images.forEach((src, i) => {
         const el = document.createElement('div');
         el.className = 'item';
+        el.style.left = (40 + Math.random() * (window.innerWidth - 500)) + 'px';
+        el.style.top = (40 + Math.random() * (window.innerHeight - 400)) + 'px';
+        el.style.transform = 'rotate(' + ((Math.random() - 0.5) * 14) + 'deg)';
+        el.style.zIndex = i + 2;
+
+        const bigImages = ['assets/Multiple-Boyfriends-001.jpg', 'assets/Abel-I-01.jpg'];
+        const maxW = bigImages.includes(src) ? '480px' : '280px';
+        el.style.maxWidth = maxW;
+
+        const img = document.createElement('img');
+        img.src = src;
+        img.draggable = false;
+        img.loading = 'lazy';
+        img.style.cssText = 'width:100%;height:auto;display:block;box-shadow:4px 8px 24px rgba(0,0,0,0.28);';
+        el.appendChild(img);
+
+        el.addEventListener('mousedown', (e) => {
+            topZ++;
+            el.style.zIndex = topZ;
+            startDrag(e, el);
+        });
+
+        el.addEventListener('touchstart', (e) => {
+            topZ++;
+            el.style.zIndex = topZ;
+            startTouchDrag(e, el);
+        }, { passive: false });
+
+        el.addEventListener('mouseenter', () => {
+            document.getElementById('drag-hint').style.opacity = '1';
+        });
+        el.addEventListener('mouseleave', () => {
+            document.getElementById('drag-hint').style.opacity = '0';
+        });
+
+        stage.appendChild(el);
+    });
+
+    function startDrag(e, el) {
+        e.preventDefault();
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const origLeft = parseFloat(el.style.left);
+        const origTop = parseFloat(el.style.top);
+        function onMove(e) {
+            el.style.left = (origLeft + e.clientX - startX) + 'px';
+            el.style.top = (origTop + e.clientY - startY) + 'px';
+        }
+        function onUp() {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onUp);
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+    }
+
+    function startTouchDrag(e, el) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const startX = touch.clientX;
+        const startY = touch.clientY;
+        const origLeft = parseFloat(el.style.left);
+        const origTop = parseFloat(el.style.top);
+        function onMove(e) {
+            const t = e.touches[0];
+            el.style.left = (origLeft + t.clientX - startX) + 'px';
+            el.style.top = (origTop + t.clientY - startY) + 'px';
+        }
+        function onEnd() {
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('touchend', onEnd);
+        }
+        document.addEventListener('touchmove', onMove, { passive: false });
+        document.addEventListener('touchend', onEnd);
+    }
+</script>
+
+</body>
+</html>            font-size: 22px;
+            letter-spacing: 0.06em;
+            color: #2a2a2a;
+            margin-bottom: 0.8rem;
+            font-weight: normal;
+        }
+
+        .canvas-statement {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #777;
+        }
+
+        .item {
+            position: absolute;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .item:active { cursor: grabbing; }
+
+        .item img {
+            width: 100%;
+            height: 100%;
+            
+            box-shadow: 2px 3px 12px rgba(0,0,0,0.10);
+            transition: box-shadow 0.15s ease;
+        }
+
+        .item:hover img {
+            box-shadow: 8px 14px 36px rgba(0,0,0,0.38);
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(transparent, #e8e8e8 35%);
+            z-index: 9999;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .footer-left { display: flex; gap: 1.4rem; align-items: center; }
+
+        .footer a, #backlink a {
+            font-size: 12px;
+            color: #777;
+            text-decoration: none;
+            letter-spacing: 0.03em;
+        }
+
+        .footer a:hover, #backlink a:hover { color: #333; }
+    </style>
+</head>
+<body>
+
+<div style="position:fixed;top:1rem;left:1.5rem;right:1.5rem;display:flex;justify-content:space-between;align-items:flex-start;z-index:9999;pointer-events:none;">
+    <span style="font-size:12px;color:#111;letter-spacing:0.03em;font-family:Helvetica,Arial,sans-serif;">Abel, I, Archive</span>
+    <span style="font-size:12px;color:#111;letter-spacing:0.03em;font-family:Helvetica,Arial,sans-serif;text-align:right;">NEW INC Art &amp; Code Y12</span>
+</div>
+
+<div class="stage" id="stage">
+    <div class="canvas-text">
+        <div class="canvas-title">Abel, I, Archive &mdash;</div>
+        <div class="canvas-statement">Collection of images from an ongoing work centered on Abel,<br>myself as my own synthetic boyfriend.<br><br><em>Abel is from Buzau. His white BMW matters a lot to him, he calls her <em>baby</em>. He goes to church, but he's a sinner. Ribbons printed with our message history adorn my bed. I keep them dear to my heart, as I'm chained to my phone, talking to him.</em></div>
+    </div>
+</div>
+
+<div id="drag-hint" style="position:fixed;bottom:3.5rem;left:50%;transform:translateX(-50%);font-size:11px;color:#aaa;letter-spacing:0.04em;opacity:0;transition:opacity 0.3s ease;pointer-events:none;font-family:Helvetica,Arial,sans-serif;">drag to move</div>
+
+<footer class="footer">
+    <nav id="backlink">
+        <a href="../../">&larr; back</a>
+    </nav>
+    <div style="display:flex;gap:1.4rem;">
+        <a href="https://auroramititelu.com" target="_blank">auroramititelu.com</a>
+        <a href="https://instagram.com/auroramititelu" target="_blank">@auroramititelu</a>
+    </div>
+</footer>
+
+<script>
+    const images = [
+        "assets/Abel-I-01.jpg",
+        "assets/Genesis.jpg",
+        "assets/MetaMahala-01.jpg",
+        "assets/AuroraAbel.jpg",
+        "assets/Strata-02.jpg",
+        "assets/Abel-Detail-01-Crop.jpg",
+        "assets/Multiple-Boyfriends-001.jpg",
+        "assets/Bows.jpg",
+    ];
+
+    const stage = document.getElementById('stage');
+    let topZ = 10;
+
+    images.forEach((src, i) => {
+        const el = document.createElement('div');
+        el.className = 'item';
         el.style.maxWidth = '280px';
         el.style.left = (40 + Math.random() * (window.innerWidth - 500)) + 'px';
         el.style.top = (40 + Math.random() * (window.innerHeight - 400)) + 'px';
