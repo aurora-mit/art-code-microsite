@@ -25,7 +25,7 @@
         }
 
         .canvas-text {
-            position: absolute;
+            position: fixed;
             top: 38%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -152,7 +152,7 @@
         img.src = src;
         img.draggable = false;
         img.loading = 'lazy';
-        img.style.cssText = 'width:100%;height:auto;display:block;box-shadow:4px 8px 24px rgba(0,0,0,0.28);';
+        img.style.cssText = 'width:' + parseInt(maxW) + 'px;height:auto;display:block;box-shadow:4px 8px 24px rgba(0,0,0,0.28);flex-shrink:0;';
         el.appendChild(img);
 
         el.addEventListener('mousedown', (e) => {
