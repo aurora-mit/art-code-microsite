@@ -12,7 +12,7 @@
             background: #e8e8e8;
             min-height: 100vh;
             font-family: Helvetica, Arial, sans-serif;
-            overflow-x: hidden;
+            overflow-x: clip;
         }
 
         .stage {
@@ -74,7 +74,7 @@
             left: 0;
             right: 0;
             padding: 1rem 1.5rem;
-            background: linear-gradient(transparent, #e8e8e8 35%);
+            background: #e8e8e8;
             z-index: 9999;
             display: flex;
             align-items: flex-end;
@@ -103,7 +103,7 @@
 <div class="stage" id="stage">
     <div class="canvas-text">
         <div class="canvas-title">Abel, I, Archive &mdash;</div>
-        <div class="canvas-statement">Collection of images from an ongoing work centered on Abel,<br>myself as my own synthetic boyfriend.<br><br><em>Abel is from Buzau. His white BMW matters a lot to him, he calls her <em>baby</em>. He goes to church, but he's a sinner. Ribbons printed with our message history adorn my bed. I keep them dear to my heart, as I'm chained to my phone, talking to him.</em></div>
+        <div class="canvas-statement">Collection of images from an ongoing work centered on Abel, myself as my own synthetic boyfriend. <em>&ldquo;Abel is from Buzau. His white BMW matters a lot to him, he calls her baby. He goes to church, but he's a sinner. Ribbons printed with our message history adorn my bed. I keep them dear to my heart, as I'm chained to my phone, talking to him.&rdquo;</em></div>
     </div>
 </div>
 
@@ -143,7 +143,7 @@
         el.style.zIndex = i + 2;
 
         const bigImages = ['assets/Multiple-Boyfriends-001.jpg', 'assets/Abel-I-01.jpg'];
-        const maxW = bigImages.includes(src) ? '960px' : '560px';
+        const maxW = bigImages.includes(src) ? '750px' : '430px';
         el.style.maxWidth = maxW;
 
         const img = document.createElement('img');
